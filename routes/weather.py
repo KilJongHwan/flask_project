@@ -68,8 +68,11 @@ def get_weather2():
                      'dataType': data_type}
 
     # 요청 및 응답
-    r = requests.get(url, params=req_parameter)
-
+    try:
+        r = requests.get(url, params=req_parameter)
+    except requests.exceptions.RequestException as e:
+        print(f"리퀘스트 오류발생: {e}")
+        return json.dumps({"error": str(e)}, ensure_ascii=False)
     # JSON 형태로 응답받은 데이터를 딕셔너리로 변환
     dict_data = r.json()
 
