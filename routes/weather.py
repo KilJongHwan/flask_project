@@ -24,7 +24,7 @@ def get_weather2():
     ny_val = request.args.get('y', default=None, type=None)
     print("X : ", nx_val)
     print("Y : ", ny_val)
-    API_KEY = 'LPh8U0fWWitEfCUYAQMCreTSbSbI4XqYB%2Bspk2jhS90QAcvAT1FforFEAfawd9rL4yV8Ecqs%2B0pv6G9eMYM5yA%3D%3D'
+    API_KEY = 'eYN5v7MqpYb0d+BloXXD4GVskkBqtc/uYQRUt/OZFvuagBUxKSRj3poGewmvwCRyac820tOK11wNBvE0C7DJ/Q=='
     API_KEY_decode = requests.utils.unquote(API_KEY)
 
     # 날짜 및 시간 설정
