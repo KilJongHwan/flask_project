@@ -1,25 +1,26 @@
-import requests
-import json
-from flask import jsonify
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
+from pykrx import stock
+from datetime import date
+
 
 def get_stock(stock_code):
-    # 웹드라이버 설정 (Chrome, Firefox 등)
-    s=Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=s)
-
-    # 네이버 금융 접속
-    driver.get(f'https://finance.naver.com/item/main.nhn?code={stock_code}')
+    # 오늘 날짜 가져오기
+    today = date.today().strftime("%Y%m%d")
 
     # 주식 정보 가져오기
+    df = stock.get_market_ohlcv_by_ticker(today)
+
+    # 지정한 주식 코드에 대한 정보 가져오기
+    latest_stock_info = df.loc[stock_code]
+
+    # 주식 정보를 JSON 형태로 변환
     stock_info = {
-        "name": driver.find_element(By.XPATH, '//*[@id="middle"]/dl/dd[2]/h2/a').text,
-        "price": driver.find_element(By.XPATH, '//*[@id="chart_area"]/div[1]/div').text,
+        "date": today,
+        "name": stock_code,
+        "price": latest_stock_info['종가'],  # 종가
+        "open": latest_stock_info['시가'],  # 시가
+        "high": latest_stock_info['고가'],  # 고가
+        "low": latest_stock_info['저가'],  # 저가
+        "volume": latest_stock_info['거래량']  # 거래량
     }
 
-    driver.quit()
-
-    return jsonify(stock_info)
+    return stock_info
