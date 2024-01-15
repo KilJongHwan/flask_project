@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="Black">
+    <option name="executionMode" value="BINARY" />
+    <option name="pathToExecutable" value="C:\Users\user1\anaconda3\Scripts\black.exe" />
+    <option name="sdkUUID" value="9c6bfef2-85a4-404d-a072-41a8e69c9d2a" />
+  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (flask_project)" project-jdk-type="Python SDK" />
   <component name="PyCharmProfessionalAdvertiser">
     <option name="shown" value="true" />

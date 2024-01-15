@@ -24,3 +24,42 @@ def get_stock(stock_code):
     }
 
     return stock_info
+def get_stock_date(stock_code, start_date, end_date):
+    df = stock.get_market_ohlcv_by_date(start_date, end_date, stock_code)
+
+    # 주식 정보를 JSON 형태로 변환
+    stock_info = {
+        "date": df.index.strftime('%Y%m%d').tolist(),
+        "name": stock_code,
+        "price": df['종가'].values.tolist(),  # 종가
+        "open": df['시가'].values.tolist(),  # 시가
+        "high": df['고가'].values.tolist(),  # 고가
+        "low": df['저가'].values.tolist(),  # 저가
+        "volume": df['거래량'].values.tolist()  # 거래량
+    }
+
+    return stock_info
+
+def get_all_stock_codes():
+    # 모든 주식 종목 코드를 가져옵니다.
+    all_stock_codes = stock.get_market_ticker_list()
+    return all_stock_codes
+
+def get_stock_codes_by_market(market):
+    # 지정한 시장의 주식 종목 코드를 가져옵니다.
+    stock_codes = stock.get_market_ticker_list(market=market)
+    return stock_codes
+def get_user_preference():
+    # 사용자의 투자 성향과 위험 허용도를 묻는 질문
+    investment_style = input("당신의 투자 성향을 입력해주세요 (예: 보수적, 공격적): ")
+    risk_tolerance = input("당신의 위험 허용도를 입력해주세요 (예: 높음, 중간, 낮음): ")
+    stock_category = input("관심있는 주식의 산업 분야를 입력해주세요: ")
+
+    # 사용자의 선호도를 dictionary 형태로 변환
+    user_preference = {
+        "investment_style": investment_style,
+        "risk_tolerance": risk_tolerance,
+        "stock_category": stock_category
+    }
+
+    return user_preference
