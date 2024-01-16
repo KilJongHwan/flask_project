@@ -124,12 +124,6 @@ def get_category_stock_codes(category, max_stock_count=50):
     return category_stock_codes
 
 if __name__ == "__main__":
-    # stock_code = '005930'  # 삼성전자의 주식 코드
-    # start_date = "20230101"
-    # end_date = "20240101"
-    # predictions = predict_stock_price(stock_code, start_date, end_date)
-    # print(predictions)
-
     user_preference = get_user_preference()
     all_stock_codes = get_all_stock_codes()
 
@@ -147,10 +141,3 @@ if __name__ == "__main__":
 
     recommend_stock(user_preference, all_stock_codes)
 
-    # for stock_code in all_stock_codes:
-    #     start_date = "20230101"
-    #     end_date = "20240101"
-    #     predictions = predict_stock_price(stock_code, start_date, end_date)
-    #     print(predictions)
-
-    # recommend_stock(user_preference, all_stock_codes)
