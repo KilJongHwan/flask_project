@@ -6,8 +6,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 import matplotlib.pyplot as plt
 from pykrx import stock
-import requests
 from datetime import date
+from datetime import datetime, timedelta
+from multiprocessing import Pool
+import requests
 
 
 def get_stock(stock_code):
@@ -51,8 +53,18 @@ def get_stock_date(stock_code, start_date, end_date):
     return stock_info
 
 
-from datetime import datetime, timedelta
-from multiprocessing import Pool
+def get_user_preference():
+    # 사용자의 투자 성향과 위험 허용도를 묻는 질문
+    investment_style = input("당신의 투자 성향을 입력해주세요 (예: 보수적, 공격적): ")
+    risk_tolerance = input("당신의 위험 허용도를 입력해주세요 (예: 높음, 중간, 낮음): ")
+
+    # 사용자의 선호도를 dictionary 형태로 변환
+    user_preference = {
+        "investment_style": investment_style,
+        "risk_tolerance": risk_tolerance
+    }
+
+    return user_preference
 
 
 def calculate_volatility(stock_code, date, min_price, min_volume):
@@ -97,20 +109,6 @@ def get_all_stock_codes_filtered(risk_tolerance, date, min_price, min_volume):
     return filtered_stock_codes
 
 
-def get_user_preference():
-    # 사용자의 투자 성향과 위험 허용도를 묻는 질문
-    investment_style = input("당신의 투자 성향을 입력해주세요 (예: 보수적, 공격적): ")
-    risk_tolerance = input("당신의 위험 허용도를 입력해주세요 (예: 높음, 중간, 낮음): ")
-
-    # 사용자의 선호도를 dictionary 형태로 변환
-    user_preference = {
-        "investment_style": investment_style,
-        "risk_tolerance": risk_tolerance
-    }
-
-    return user_preference
-
-
 def create_dataset(data, look_back):
     x_data, y_data = [], []
     for i in range(look_back, len(data)):
@@ -118,32 +116,6 @@ def create_dataset(data, look_back):
         y_data.append(data[i, 0])
     print(np.array(x_data).shape)  # x_data의 형태 출력
     return np.array(x_data), np.array(y_data),
-
-
-from bs4 import BeautifulSoup
-
-
-def get_news_articles(category='all'):
-    # API 요청 URL 및 파라미터 설정
-    url = 'https://www.bigkinds.or.kr/api/news/search.do'
-    params = {
-        'indexName': 'news',
-        'startDate': '20230101',
-        'endDate': '20240101',
-        'isDuplicate': False,
-        'apiKey': 'YOUR_API_KEY'  # 실제 API 키로 대체
-    }
-
-    # API 요청
-    response = requests.post(url, data=json.dumps(params))
-
-    # 응답 데이터를 JSON 형태로 변환
-    data = response.json()
-
-    # 뉴스 기사 제목 추출
-    news_titles = [doc['TITLE'] for doc in data['resultList']]
-
-    print(news_titles)
 
 
 def predict_stock_price(stock_code, start_date, end_date):
@@ -215,7 +187,7 @@ def predict_stock_price(stock_code, start_date, end_date):
     plt.legend(loc='upper left')
     plt.xlabel('Time (day)')
     plt.ylabel('Stock Price ($)')
-    plt.show()
+    # plt.show()
 
     # 예측 결과를 출력
     return predictions
@@ -245,20 +217,19 @@ def recommend_stock(user_preference, all_stock_codes_filtered):
     return recommended_stock_name, max_increase_rate * 100  # 백분율로 변환
 
 
-if __name__ == "__main__":
-    user_preference = get_user_preference()
+user_preference = get_user_preference()
 
-    # 오늘 날짜를 가져옴
-    date_today = date.today().strftime("%Y%m%d")
+# 오늘 날짜를 가져옴
+date_today = date.today().strftime("%Y%m%d")
 
-    # 모든 주식 코드를 가져옴
-    all_stock_codes = get_all_stock_codes_filtered(user_preference['risk_tolerance'], date_today, min_price=20000,
-                                                   min_volume=10000)
-    all_stock_codes = all_stock_codes[:20]
-    print(all_stock_codes)
+# 모든 주식 코드를 가져옴
+all_stock_codes = get_all_stock_codes_filtered(user_preference['risk_tolerance'], date_today, min_price=20000,
+                                               min_volume=10000)
+all_stock_codes = all_stock_codes[:20]
+print(all_stock_codes)
 
-    # 모든 주식 코드 중에서 가장 높은 수익률을 보여줄 것으로 예상되는 주식을 추천
-    recommended_stock, max_increase_rate = recommend_stock(user_preference, all_stock_codes)
+# 모든 주식 코드 중에서 가장 높은 수익률을 보여줄 것으로 예상되는 주식을 추천
+recommended_stock, max_increase_rate = recommend_stock(user_preference, all_stock_codes)
 
-    average_increase_rate = np.mean(max_increase_rate)
-    print(f"추천 주식: {recommended_stock}, 예상 수익률: {average_increase_rate:.2f}%")
+average_increase_rate = np.mean(max_increase_rate)
+print(f"추천 주식: {recommended_stock}, 예상 수익률: {average_increase_rate:.2f}%")
