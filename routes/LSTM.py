@@ -6,7 +6,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 import matplotlib.pyplot as plt
 from pykrx import stock
-import requests
 from datetime import date
 from datetime import datetime, timedelta
 from multiprocessing import Pool
@@ -53,11 +52,10 @@ def get_stock_date(stock_code, start_date, end_date):
     return stock_info
 
 
-
-def calculate_volatility(stock_code, date, min_price, min_volume):
+def calculate_volatility(stock_code, date_set, min_price, min_volume):
     # 최근 30일간의 데이터만 가져오기
-    start_date = (datetime.strptime(date, "%Y%m%d") - timedelta(days=30)).strftime("%Y%m%d")
-    df = stock.get_market_ohlcv_by_date(start_date, date, stock_code)
+    start_date = (datetime.strptime(date_set, "%Y%m%d") - timedelta(days=30)).strftime("%Y%m%d")
+    df = stock.get_market_ohlcv_by_date(start_date, date_set, stock_code)
 
     # 변동성 계산 시 최근 5일간의 데이터만 사용
     returns = df['종가'].iloc[-5:].pct_change()
@@ -102,12 +100,12 @@ def get_user_preference():
     risk_tolerance = input("당신의 위험 허용도를 입력해주세요 (예: 높음, 중간, 낮음): ")
 
     # 사용자의 선호도를 dictionary 형태로 변환
-    user_preference = {
+    preference = {
         "investment_style": investment_style,
         "risk_tolerance": risk_tolerance
     }
 
-    return user_preference
+    return preference
 
 
 def create_dataset(data, look_back):
